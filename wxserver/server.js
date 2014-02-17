@@ -4,7 +4,7 @@
 
 var http = require("http");
 var url  =require("url");
-var querystring = require("querystring")
+var querystring = require("querystring");
 
 
 // 处理微信的验证
@@ -18,9 +18,17 @@ function wx_verification(req,res)
     res.write(echostr);
     res.end();
 }
-http.createServer(function(req,res){
-    console.log("url here :" + req.url);
 
+//处理GET请求的方法
+function onGet(req,res)
+{
+    console.log("onGet");
+    res.writeHead(200);
+    res.end();
+}
+//处理Post请求的方法
+function onPost(req,res)
+{
     req.setEncoding('utf8');
     var postData = "";
     req.addListener("data",function(dataChunk)
@@ -30,10 +38,25 @@ http.createServer(function(req,res){
     });
     req._addHeaderLine("end",function()
     {
-       console.log("post data received :"+postData);
+        console.log("post data received :"+postData);
         res.writeHead(200,{"Content-Type":"text/plain"});
         res.end();
     });
 
+}
+//启动httpserver
+http.createServer(function(req,res){
 
-}).listen(80);
+    console.log("url here :" + req.url);
+    var method = req.method;
+    console.log(req.headers);
+  if("GET" == method)
+    {
+        onGet(req,res);
+    }
+    if("POST" == method)
+    {
+        onPost(req,res);
+    }
+
+}).listen(8080);
